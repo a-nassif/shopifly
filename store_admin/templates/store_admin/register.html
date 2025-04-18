@@ -1,0 +1,49 @@
+{% extends 'store_admin/base.html' %}
+{% load form_filters %}
+
+
+{% block content %}
+    <h2 class="mb-4">Create Your Store</h2>
+
+    <form method="post" class="p-4 shadow-sm" style="text-align: left">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            {{ form.store_name.label_tag|add_label_class:"form-label" }}
+            {{ form.store_name|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3">
+            {{ form.subdomain.label_tag|add_label_class:"form-label" }}
+            {{ form.subdomain|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3">
+            {{ form.name.label_tag|add_label_class:"form-label" }}
+            {{ form.name|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3">
+            {{ form.email.label_tag|add_label_class:"form-label" }}
+            {{ form.email|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3">
+            {{ form.password.label_tag|add_label_class:"form-label" }}
+            {{ form.password|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3">
+            {{ form.confirm_password.label_tag|add_label_class:"form-label" }}
+            {{ form.confirm_password|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3" style="text-align: center">
+            <button type="submit" class="btn btn-primary">Register Store</button>
+        </div>
+    </form>
+
+    <br/>
+    <p>Already have a store? <a href="{% url 'store_admin:store_owner_login' %}">Login now</a>.</p>
+
+{% endblock %}

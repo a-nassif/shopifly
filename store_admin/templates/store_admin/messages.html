@@ -1,0 +1,23 @@
+
+<style>
+    .success {
+        background-color: #28a745;
+        color: white;
+        width: 300px;
+        margin: 0 auto;
+        border: 1px solid green;
+        border-radius: 10px;
+        margin-top: 5px;
+        list-style-type: none;
+    }
+</style>
+
+<header >
+        {% if messages %}
+        <ul class="messages" style="text-align: center">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</header>

@@ -1,0 +1,166 @@
+{% extends 'store_admin/base.html' %}
+{% load form_filters %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Settings</h3>
+            <form method="post" enctype="multipart/form-data" class="p-4 shadow-sm " style="text-align: left">
+                {% csrf_token %}
+
+                <!-- Store Name -->
+                <div class="mb-3">
+                    {{ form.name.label_tag|add_label_class:"form-label" }}
+                    {{ form.name|add_class:"form-control" }}
+                </div>
+
+                <!-- Subdomain + Status -->
+                <div class="mb-3">
+                    {{ form.subdomain.label_tag|add_label_class:"form-label" }}
+                    {{ form.subdomain|add_class:"form-control" }}
+                    <div id="subdomain-status" class="form-text mt-1"></div>
+                </div>
+
+                <!-- Custom Domain + Status -->
+                <div class="mb-3">
+                    {{ form.custom_domain.label_tag|add_label_class:"form-label" }}
+                    {{ form.custom_domain|add_class:"form-control" }}
+                    <div id="customdomain-status" class="form-text mt-1"></div>
+                </div>
+
+                <!-- Logo Upload -->
+                <div class="mb-3">
+                    {{ form.logo.label_tag|add_label_class:"form-label" }}
+                    {{ form.logo|add_class:"form-control" }}
+                    {% if request.store.logo %}
+                        <div class="mt-2">
+                            <img src="{{ request.store.logo.url }}" alt="Store Logo" class="img-thumbnail"
+                                 style="max-height: 80px;">
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Brand Color Picker -->
+                <div class="mb-3">
+                    {{ form.brand_color.label_tag|add_label_class:"form-label" }}
+                    {{ form.brand_color|add_class:"form-control form-control-color" }}
+                    <div id="brand-color-preview" class="border rounded mt-2"
+                         style="width: 40px; height: 40px; background: {{ request.store.brand_color }}"></div>
+                </div>
+
+                <!-- Currency -->
+                <div class="mb-3">
+                    {{ form.currency.label_tag|add_label_class:"form-label" }}
+                    {{ form.currency|add_class:"form-control" }}
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-2">Save Settings</button>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <h3>Preview</h3>
+            <a href="{{ store_domain }}" target="_blank">{{ store_domain }}</a>
+
+            <div style="padding: 1rem; border: 1px solid #ccc; border-radius: 6px; width: 100%;">
+                <p><strong>Current Logo:</strong></p>
+                {% if request.user.store.logo %}
+                    <img src="{{ request.user.store.logo.url }}" alt="Store Logo" style="max-height: 80px;">
+                {% else %}
+                    <p>No logo uploaded.</p>
+                {% endif %}
+
+                <p><strong>Brand Color:</strong></p>
+                <div style="width: 40px; height: 40px; border: 1px solid #000; background-color: {{ request.user.store.brand_color }};"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const colorInput = document.querySelector('input[type="color"]');
+            const logoInput = document.querySelector('input[type="file"]');
+            const previewBox = document.querySelector('div[style*="background"]');
+            const logoImg = document.querySelector('img[alt="Store Logo"]');
+
+            if (colorInput && previewBox) {
+                colorInput.addEventListener('input', () => {
+                    previewBox.style.backgroundColor = colorInput.value;
+                });
+            }
+
+            if (logoInput && logoImg) {
+                logoInput.addEventListener('change', e => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = e => {
+                            logoImg.src = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            function checkAvailability(type, value) {
+                const statusEl = document.getElementById(type + '-status');
+                fetch(`/admin/check-domain/?${type}=${value}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data[`${type}_taken`]) {
+                            statusEl.textContent = "❌ Already taken";
+                            statusEl.style.color = 'red';
+                        } else {
+                            statusEl.textContent = "✅ Available";
+                            statusEl.style.color = 'green';
+                        }
+                    });
+            }
+
+            const subdomainInput = document.querySelector('input[name="subdomain"]');
+            const customDomainInput = document.querySelector('input[name="custom_domain"]');
+            const colorInput = document.querySelector('input[name="brand_color"]');
+            const logoInput = document.querySelector('input[name="logo"]');
+            const colorPreview = document.getElementById('brand-color-preview');
+            const logoImg = document.querySelector('img[alt="Store Logo"]');
+
+            if (subdomainInput) {
+                subdomainInput.addEventListener('input', () => {
+                    const value = subdomainInput.value.trim();
+                    if (value.length > 2) checkAvailability('subdomain', value);
+                });
+            }
+
+            if (customDomainInput) {
+                customDomainInput.addEventListener('input', () => {
+                    const value = customDomainInput.value.trim();
+                    if (value.length > 5) checkAvailability('custom_domain', value);
+                });
+            }
+
+            if (colorInput && colorPreview) {
+                colorInput.addEventListener('input', () => {
+                    colorPreview.style.backgroundColor = colorInput.value;
+                });
+            }
+
+            if (logoInput && logoImg) {
+                logoInput.addEventListener('change', e => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = e => {
+                            logoImg.src = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+        });
+    </script>
+
+{% endblock %}
