@@ -61,7 +61,7 @@ def store_owner_register(request):
 
 def store_owner_logout(request):
     logout(request)
-    return redirect('marketing_landing')
+    return redirect('home_dispatcher')
 
 
 @login_required
