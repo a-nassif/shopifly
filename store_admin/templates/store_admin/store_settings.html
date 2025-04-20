@@ -41,6 +41,21 @@
                     {% endif %}
                 </div>
 
+                <!-- Theme Picker -->
+                <div class="mb-3">
+                    <label for="theme-selector" class="form-label">Theme</label>
+                    <select name="theme" id="theme-selector" class="form-select" autocomplete="off">
+                        <option value="">Choose a theme</option>
+                        {% for theme in form.fields.theme.queryset %}
+                            <option value="{{ theme.id }}"
+                                    data-preview="{% if theme.preview_image %}{{ theme.preview_image.url }}{% endif %}"
+                                    {% if form.initial.theme == theme.id %}selected{% endif %}>
+                                {{ theme.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
                 <!-- Brand Color Picker -->
                 <div class="mb-3">
                     {{ form.brand_color.label_tag|add_label_class:"form-label" }}
@@ -58,20 +73,26 @@
                 <button type="submit" class="btn btn-primary mt-2">Save Settings</button>
             </form>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6 preview-box" id="theme-preview-box">
             <h3>Preview</h3>
             <a href="{{ store_domain }}" target="_blank">{{ store_domain }}</a>
 
             <div style="padding: 1rem; border: 1px solid #ccc; border-radius: 6px; width: 100%;">
-                <p><strong>Current Logo:</strong></p>
-                {% if request.user.store.logo %}
-                    <img src="{{ request.user.store.logo.url }}" alt="Store Logo" style="max-height: 80px;">
-                {% else %}
-                    <p>No logo uploaded.</p>
-                {% endif %}
-
-                <p><strong>Brand Color:</strong></p>
-                <div style="width: 40px; height: 40px; border: 1px solid #000; background-color: {{ request.user.store.brand_color }};"></div>
+                {#                <p><strong>Current Logo:</strong></p>#}
+                {#                {% if request.user.store.logo %}#}
+                {#                    <img src="{{ request.user.store.logo.url }}" alt="Store Logo" style="max-height: 80px;">#}
+                {#                {% else %}#}
+                {#                    <p>No logo uploaded.</p>#}
+                {#                {% endif %}#}
+                {##}
+                {#                <p><strong>Brand Color:</strong></p>#}
+                {#                <div style="width: 40px; height: 40px; border: 1px solid #000; background-color: {{ request.user.store.brand_color }};"></div>#}
+{#                {% if form.initial.theme and form.initial.theme.preview_image %}#}
+                    <img src="{{ request.user.store.theme.preview_image.url }}" class="img-fluid rounded shadow-sm"
+                         style="width: 100%" alt="Preview not available">
+{#                {% else %}#}
+{#                    <p class="text-muted">No preview selected.</p>#}
+{#                {% endif %}#}
             </div>
         </div>
     </div>
@@ -162,5 +183,22 @@
             }
         });
     </script>
+
+    <script>
+        const themeSelector = document.getElementById('theme-selector');
+        const previewBox = document.getElementById('theme-preview-box');
+
+        themeSelector.addEventListener('change', function () {
+            const selectedOption = themeSelector.options[themeSelector.selectedIndex];
+            const previewUrl = selectedOption.getAttribute('data-preview');
+
+            if (previewUrl) {
+                previewBox.innerHTML = `<img src="${previewUrl}" class="img-fluid rounded shadow-sm" style="width: 100%">`;
+            } else {
+                previewBox.innerHTML = `<p class="text-muted">No preview selected.</p>`;
+            }
+        });
+    </script>
+
 
 {% endblock %}

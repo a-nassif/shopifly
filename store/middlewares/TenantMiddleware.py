@@ -12,14 +12,14 @@ class TenantMiddleware:
         host = request.get_host().split(':')[0]
 
         # Handle local development
-        if host == 'localhost' or host == '127.0.0.1':
+        if host == 'localhost' or host == '127.0.0.1' or host == 'shopifly.local':
             # No subdomain = main platform/landing page
             request.store = None
             request.is_platform = True
             return self.get_response(request)
 
         # Handle subdomain like store1.localhost
-        if host.endswith('.localhost'):
+        if host.endswith('.localhost') or host.endswith('.shopifly.local'):
             subdomain = host.split('.')[0]
             try:
                 store = Store.objects.get(subdomain=subdomain, is_active=True)

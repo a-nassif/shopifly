@@ -24,7 +24,9 @@ class Store(models.Model):
     # Optional extras
     logo = models.ImageField(upload_to='store_logos', null=True, blank=True)
     brand_color = models.CharField(max_length=7, default='#000000')  # HEX color
-    theme = models.CharField(max_length=255, default='theme_1')
+    theme = models.ForeignKey('Theme', on_delete=models.SET_NULL, null=True,
+                              blank=True)
+    # theme = models.CharField(max_length=255, null=True, blank=True)
     currency = models.CharField(max_length=10, default='IQD',
                                 choices=CURRENCY_OPTIONS)
 
@@ -38,6 +40,17 @@ class Store(models.Model):
             return self.custom_domain
         # elif current_host == 'localhost:8000':
         return f"{request.scheme}://{self.subdomain}.{request.get_host()}"
+
+
+class Theme(models.Model):
+    name = models.CharField(max_length=255)
+    template_path = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    preview_image = models.ImageField(upload_to='theme_previews', null=True,
+                                      blank=True)
+
+    def __str__(self):
+        return self.name
 
 
 class ProductManager(models.Manager):

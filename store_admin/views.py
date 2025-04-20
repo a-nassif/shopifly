@@ -9,7 +9,6 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
 
-from store.decorators import store_owner_required
 from store.forms import ProductForm
 from store.models import Store
 from .forms import StoreSettingsForm, StoreOwnerRegistrationForm
@@ -17,6 +16,9 @@ from .models import StoreOwnerUser
 
 
 def store_owner_login(request):
+    if request.user.is_authenticated and hasattr(request.user, 'store'):
+        return redirect(
+            reverse('store_admin:store_dashboard'))
     if request.method == 'POST':
         email = request.POST['email']
         password = request.POST['password']
@@ -31,6 +33,9 @@ def store_owner_login(request):
 
 
 def store_owner_register(request):
+    if request.user.is_authenticated and hasattr(request.user, 'store'):
+        return redirect(
+            reverse('store_admin:store_dashboard'))
     if request.method == 'POST':
         form = StoreOwnerRegistrationForm(request.POST)
         if form.is_valid():
@@ -44,6 +49,7 @@ def store_owner_register(request):
                 password=form.cleaned_data['password'],
                 store=store
             )
+            user = authenticate(request, username=user.email, password=form.cleaned_data['password'])
             login(request, user)
             return redirect(
                 reverse('store_admin:store_dashboard'))  # Or wherever you want
@@ -103,7 +109,7 @@ def check_store_domain(request):
 
     return JsonResponse(response)
 
-
+@login_required
 def store_products(request):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)

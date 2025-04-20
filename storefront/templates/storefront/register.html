@@ -1,0 +1,43 @@
+{% extends extend_path %}
+{% load form_filters %}
+
+{% block content %}
+
+    <div class="row justify-content-center py-5">
+
+        <div class="col-md-6">
+            {% if form.errors %}
+                {% for k,v in form.errors.items %}
+                    <p style="color:red">{{ v }}</p>
+                {% endfor %}
+            {% endif %}1
+            <h2 class="mb-4">Create an Account</h2>
+            <form method="post" class="card p-4 shadow-sm">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    {{ form.name.label_tag|add_label_class:"form-label" }}
+                    {{ form.name|add_class:"form-control" }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.email.label_tag|add_label_class:"form-label" }}
+                    {{ form.email|add_class:"form-control" }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.password.label_tag|add_label_class:"form-label" }}
+                    {{ form.password|add_class:"form-control" }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.confirm_password.label_tag|add_label_class:"form-label" }}
+                    {{ form.confirm_password|add_class:"form-control" }}
+                </div>
+
+                <button type="submit" class="btn btn-primary">Register</button>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

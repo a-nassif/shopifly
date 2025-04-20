@@ -24,7 +24,7 @@ SECRET_KEY = 'django-insecure-9lh9&7iz4*m=h)r0=b*9^o8@h8e1$73uaxy4i7&*z75y_*s%(o
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*", ".shopifly.local", "127.0.0.1", "localhost"]
 
 # Application definition
 
@@ -41,7 +41,8 @@ INSTALLED_APPS += [
     'store',
     'store_admin',
     'storefront',
-    'stellwerk'
+    'stellwerk',
+    'shopifly',
 ]
 
 MIDDLEWARE = [
@@ -131,3 +132,7 @@ MEDIA_URL = 'media/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SESSION_COOKIE_DOMAIN = ".shopifly.local"
+
+CSRF_COOKIE_DOMAIN = ".shopifly.local"

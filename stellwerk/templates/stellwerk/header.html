@@ -2,10 +2,10 @@
   <div class="inner">
     <h3 class="masthead-brand">ShopiFLY</h3>
     <nav class="nav nav-masthead justify-content-center">
-      <a class="nav-link active" href="#">Home</a>
-      <a class="nav-link" href="#">Features</a>
-      <a class="nav-link" href="#">Browse Stores</a>
-      <a class="nav-link" href="{% url 'store_admin:store_owner_login' %}">Open a Store</a>
+      <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/">Home</a>
+      <a class="nav-link {% if 'features' in request.path %}active{% endif %}" href="#">Features</a>
+      <a class="nav-link {% if 'browse' in request.path %}active{% endif %}" href="#">Browse Stores</a>
+      <a class="nav-link {% if 'register' in request.path %}active{% endif %}" href="{% url 'store_admin:store_owner_register' %}">Open a Store</a>
 {#      <a class="nav-link" href="#">Contact</a>#}
     </nav>
   </div>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+Redirecting to store page... {{ redirect_url }}
+
+<script>
+    setTimeout(function () { window.location.href = "{{ redirect_url }}" }, 3000)
+</script>
+
+</body>
+</html>
