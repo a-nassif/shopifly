@@ -1,12 +1,14 @@
 {% extends extend_path %}
+{% load form_filters %}
 
 {% block content %}
 
     {% if error %}<p style="color:red">{{ error }}</p>{% endif %}
 
-    <div class="row py-5 justify-content-center">
+    <div class="row justify-content-center py-5">
         <div class="col-md-6">
-            <form class="form-group" method="post" action="{% url 'store_customer:store_customer_login' %}" style="text-align: left">
+            <h2 class="mb-4">Login to your Account</h2>
+            <form class="card p-4 shadow-sm" method="post" action="{% url 'storefront:store_customer_login' %}" style="text-align: left">
                 {% csrf_token %}
 
                 <div class="mb-3">
@@ -17,14 +19,12 @@
                     <label for="password" class="form-label">Password</label>
                     <input class="form-control" type="password" name="password" placeholder="Password"><br>
                 </div>
-                <div class="mb-3" style="text-align: center">
-                    <button class="btn btn-success" type="submit" style="text-align: center">Log In</button>
-                </div>
+{#                <div class="mb-3" style="text-align: center">#}
+                    <button type="submit" class="btn btn-primary">Login</button>
+{#                </div>#}
             </form>
             <br/>
-            <p>Haven't got a store yet? <a href="{% url 'store_customer:store_customer_register' %}">Register now</a> and
-                build your
-                own.</p>
+            <p>Don't have an account yet? <a href="{% url 'storefront:store_customer_register' %}">Register now</a></p>
         </div>
     </div>
 

@@ -13,7 +13,7 @@
       <p class="text-muted">${{ product.price }}</p>
       <p>{{ product.description }}</p>
 
-      <form method="post" action="{% url 'store_customer:add_to_cart' product.id %}">
+      <form method="post" action="{% url 'storefront:add_to_cart' product.id %}">
         {% csrf_token %}
         <input type="number" name="quantity" value="1" min="1" class="form-control mb-2" style="width: 100px;">
         <button class="btn btn-primary">Add to Cart</button>

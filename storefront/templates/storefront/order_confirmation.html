@@ -1,0 +1,14 @@
+{% extends extend_path %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="text-center">
+        <h1>Thank You for Your Order!</h1>
+        <p>Your order number is: #{{ order.id }}</p>
+        <p>We'll send you an email confirmation shortly.</p>
+        <div class="mt-4">
+            <a href="{% url 'storefront:home_dispatcher' %}" class="btn btn-primary">Continue Shopping</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

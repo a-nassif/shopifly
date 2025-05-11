@@ -1,29 +1,32 @@
 <header class="navbar sticky-top bg-dark flex-md-nowrap p-0 shadow" data-bs-theme="dark">
     <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-white" href="{% url 'store_admin:store_dashboard' %}">{{ request.user.store.name }}</a>
-    <ul class="navbar-nav flex-row d-md-none">
-        <li class="nav-item text-nowrap">
-            <button class="nav-link px-3 text-white" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarSearch">
-                <svg class="bi" aria-hidden="true">
-                    <use href="#search"/>
-                </svg>
-            </button>
+{#    <ul class="navbar-nav flex-row d-md-none">#}
+{#        <li class="nav-item text-nowrap">#}
+{#            <button class="nav-link px-3 text-white" type="button" data-bs-toggle="collapse"#}
+{#                    data-bs-target="#navbarSearch">#}
+{#                <svg class="bi" aria-hidden="true">#}
+{#                    <use href="#search"/>#}
+{#                </svg>#}
+{#            </button>#}
+{#        </li>#}
+{#        <li class="nav-item text-nowrap">#}
+{#            <button class="nav-link px-3 text-white" type="button" data-bs-toggle="offcanvas"#}
+{#                    data-bs-target="#sidebarMenu">#}
+{#                <svg class="bi" aria-hidden="true">#}
+{#                    <use href="#list"/>#}
+{#                </svg>#}
+{#            </button>#}
+{#        </li>#}
+{#    </ul>#}
+{#    <div id="navbarSearch" class="navbar-search w-100 collapse">#}
+{#        <input class="form-control w-100 rounded-0 border-0" type="text" placeholder="Search" aria-label="Search">#}
+{#    </div>#}
+    <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+            Hey {{ request.user.name }}
         </li>
         <li class="nav-item text-nowrap">
-            <button class="nav-link px-3 text-white" type="button" data-bs-toggle="offcanvas"
-                    data-bs-target="#sidebarMenu">
-                <svg class="bi" aria-hidden="true">
-                    <use href="#list"/>
-                </svg>
-            </button>
-        </li>
-    </ul>
-    <div id="navbarSearch" class="navbar-search w-100 collapse">
-        <input class="form-control w-100 rounded-0 border-0" type="text" placeholder="Search" aria-label="Search">
-    </div>
-    <ul class="navbar-nav px-3">
-        <li class="nav-item text-nowrap">
-            <a class="nav-link btn btn-default px-3 text-white" href="http://{{ request.user.store.subdomain }}.{{ request.get_host }}" target="_blank">Open Store</a>
+            <a class="nav-link btn btn-default px-3 text-white" href="http://{{ request.user.store.subdomain }}.{{ request.get_host }}" target="_blank">Show Store</a>
         </li>
     </ul>
 

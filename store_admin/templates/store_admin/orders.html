@@ -1,0 +1,65 @@
+{% extends "store_admin/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Orders</h2>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Total</th>
+                    <th>Items</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>#{{ order.id }}</td>
+                    <td>{{ order.customer.name }}</td>
+                    <td>{{ order.created_at|date:"M d, Y H:i" }}</td>
+                    <td>
+                        <span class="badge {% if order.status == 'pending' %}bg-warning
+                                         {% elif order.status == 'paid' %}bg-success
+                                         {% elif order.status == 'shipped' %}bg-info
+                                         {% elif order.status == 'cancelled' %}bg-danger
+                                         {% endif %}">
+                            {{ order.status|title }}
+                        </span>
+                    </td>
+                    <td>${{ order.total }}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#order{{ order.id }}Items">
+                            View Items
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="6" class="p-0">
+                        <div class="collapse" id="order{{ order.id }}Items">
+                            <div class="card card-body m-2">
+                                <ul class="list-unstyled mb-0">
+                                    {% for item in order.items.all %}
+                                    <li>{{ item.quantity }}x {{ item.product_name }} - ${{ item.unit_price }} each</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">No orders yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

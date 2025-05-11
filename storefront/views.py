@@ -1,16 +1,15 @@
-from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 
 # Create your views here.
 
-# storefront/views.py
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
 
 from store.models import Product
 from .forms import StoreCustomerRegisterForm
-from .models import StoreCustomerUser
+from .models import CartItem
+from .utils import get_or_create_cart, convert_cart_to_order
 
 
 def store_home(request):
@@ -77,11 +76,77 @@ def product_detail(request, pk):
 
 
 def add_to_cart(request, pk):
-    quantity = int(request.POST.get("quantity", 1))
-    product = get_object_or_404(Product, pk=pk, store=request.store)
+    """
+    Add a product to cart for both guest and registered users.
+    """
+    product = get_object_or_404(Product, id=pk, store=request.store)
+    quantity = int(request.POST.get('quantity', 1))
 
-    # pseudo-code:
-    # cart = get_or_create_cart(request)
-    # cart.add(product, quantity)
+    # Get or create cart
+    cart = get_or_create_cart(request)
 
-    return redirect('product_detail', pk=pk)
+    # Add/update cart item
+    cart_item, created = CartItem.objects.get_or_create(
+        cart=cart,
+        product=product,
+        defaults={'quantity': quantity}
+    )
+
+    if not created:
+        # Update quantity if item already exists
+        cart_item.quantity += quantity
+        cart_item.save()
+
+    return redirect('storefront:store_customer_cart')
+
+
+def cart(request):
+    """
+    Display cart contents for both guest and registered users.
+    """
+    template_extend_path = f'storefront/themes/{request.store.theme.template_path}/base.html'
+
+    # Get cart using the utility function
+    cart = get_or_create_cart(request)
+
+    # Get cart items and calculate total
+    cart_items = cart.items.select_related('product').all()
+    total = cart.total_price()
+
+    return render(request,
+                  'storefront/cart.html',
+                  {'cart_items': cart_items,
+                   'total': total,
+                   'extend_path': template_extend_path})
+
+
+def checkout(request):
+    template_extend_path = f'storefront/themes/{request.store.theme.template_path}/base.html'
+    
+    # Get the current cart
+    cart = get_or_create_cart(request)
+    
+    if not cart.items.exists():
+        return redirect('storefront:store_customer_cart')
+    
+    if request.method == 'POST':
+        # Get customer data from the form
+        customer_data = {
+            'name': request.POST.get('name'),
+            'email': request.POST.get('email'),
+        }
+        
+        # Convert cart to order
+        order = convert_cart_to_order(cart, customer_data)
+        
+        # You might want to redirect to an order confirmation page
+        return render(request, 'storefront/order_confirmation.html', {
+            'order': order,
+            'extend_path': template_extend_path
+        })
+    
+    return render(request, 'storefront/checkout.html', {
+        'cart_items': cart.items.select_related('product').all(),
+        'total': cart.total_price(),
+        'extend_path': template_extend_path
+    })

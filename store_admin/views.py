@@ -9,6 +9,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
 
+from store.decorators import store_owner_required
 from store.forms import ProductForm
 from store.models import Store
 from .forms import StoreSettingsForm, StoreOwnerRegistrationForm
@@ -16,7 +17,7 @@ from .models import StoreOwnerUser
 
 
 def store_owner_login(request):
-    if request.user.is_authenticated and hasattr(request.user, 'store'):
+    if request.user.is_authenticated and hasattr(request.user, 'store') and isinstance(request.user, StoreOwnerUser):
         return redirect(
             reverse('store_admin:store_dashboard'))
     if request.method == 'POST':
@@ -33,7 +34,7 @@ def store_owner_login(request):
 
 
 def store_owner_register(request):
-    if request.user.is_authenticated and hasattr(request.user, 'store'):
+    if request.user.is_authenticated and hasattr(request.user, 'store') and isinstance(request.user, StoreOwnerUser):
         return redirect(
             reverse('store_admin:store_dashboard'))
     if request.method == 'POST':
@@ -49,7 +50,8 @@ def store_owner_register(request):
                 password=form.cleaned_data['password'],
                 store=store
             )
-            user = authenticate(request, username=user.email, password=form.cleaned_data['password'])
+            user = authenticate(request, username=user.email,
+                                password=form.cleaned_data['password'])
             login(request, user)
             return redirect(
                 reverse('store_admin:store_dashboard'))  # Or wherever you want
@@ -65,7 +67,7 @@ def store_owner_logout(request):
 
 
 @login_required
-# @store_owner_required
+@store_owner_required
 def store_settings_view(request):
     store = request.user.store
 
@@ -86,7 +88,7 @@ def store_settings_view(request):
 
 
 @login_required
-# @store_owner_required
+@store_owner_required
 def store_dashboard_view(request):
     return render(request, 'store_admin/dashboard.html')
 
@@ -109,7 +111,9 @@ def check_store_domain(request):
 
     return JsonResponse(response)
 
+
 @login_required
+@store_owner_required
 def store_products(request):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
@@ -124,3 +128,18 @@ def store_products(request):
 
     return render(request, 'store_admin/products.html',
                   {'products': products, 'form': form})
+
+
+@login_required
+@store_owner_required
+def store_customers(request):
+    customers = request.user.store.storecustomeruser_set.all()
+    return render(request, 'store_admin/store_customers.html',
+                  {'customers': customers})
+
+
+@login_required
+@store_owner_required
+def store_orders(request):
+    orders = request.user.store.order_set.all().order_by('-created_at')
+    return render(request, 'store_admin/orders.html', {'orders': orders})

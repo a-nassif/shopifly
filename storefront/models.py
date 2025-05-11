@@ -1,4 +1,6 @@
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils import timezone
 
@@ -22,6 +24,7 @@ class StoreCustomerUser(AbstractBaseUser):
     store = models.ForeignKey(Store, on_delete=models.CASCADE)
     email = models.EmailField(unique=False)  # Allow same email in different stores
     name = models.CharField(max_length=255)
+    phone = models.CharField(max_length=20, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(auto_now_add=True)
 
@@ -38,6 +41,10 @@ class StoreCustomerUser(AbstractBaseUser):
 
 class Cart(models.Model):
     store = models.ForeignKey(Store, on_delete=models.CASCADE)
+    # Replace direct foreign key with generic foreign key
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True, blank=True)
+    object_id = models.PositiveIntegerField(null=True, blank=True)
+    user = GenericForeignKey('content_type', 'object_id')
     session_key = models.CharField(max_length=100, db_index=True)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
@@ -47,6 +54,12 @@ class Cart(models.Model):
 
     def total_price(self):
         return sum(item.quantity * item.product.price for item in self.items.select_related('product'))
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['store', 'session_key']),
+            models.Index(fields=['content_type', 'object_id']),
+        ]
 
 
 class CartItem(models.Model):

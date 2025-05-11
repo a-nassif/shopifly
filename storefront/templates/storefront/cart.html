@@ -1,0 +1,53 @@
+{% extends extend_path %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="container my-4">
+    <h1>Shopping Cart</h1>
+    
+    {% if cart_items %}
+        <div class="cart-items">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                {% if item.product.image %}
+                                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
+                                {% endif %}
+                                {{ item.product.name }}
+                            </div>
+                        </td>
+                        <td>${{ item.product.price }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>${{ item.product.price|multiply:item.quantity }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            <div class="cart-summary mt-4">
+                <h3>Cart Total: ${{ total }}</h3>
+                <div class="mt-3">
+                    <a href="{% url 'storefront:checkout' %}" class="btn btn-primary">Proceed to Checkout</a>
+                    <a href="{% url 'storefront:home_dispatcher' %}" class="btn btn-secondary">Continue Shopping</a>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="empty-cart text-center">
+            <p>Your cart is empty</p>
+            <a href="{% url 'storefront:home_dispatcher' %}" class="btn btn-primary">Start Shopping</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
