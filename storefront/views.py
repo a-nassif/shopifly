@@ -14,8 +14,12 @@ from .utils import get_or_create_cart, convert_cart_to_order
 
 def store_home(request):
     products = request.store.product_set.all()
+    if not hasattr(request.store.theme, 'template_path'):
+        template_path = 'theme_1'
+    else:
+        template_path = request.store.theme.template_path
     return render(request,
-                  f'storefront/themes/{request.store.theme.template_path}/index.html',
+                  f'storefront/themes/{template_path}/index.html',
                   {'store': request.store, 'products': products})
 
 

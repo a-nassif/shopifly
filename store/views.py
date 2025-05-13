@@ -5,8 +5,11 @@ from django.shortcuts import render
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib import messages
-from .models import StoreUser, StoreOwnerUser
 from django.contrib.auth import authenticate
+
+from store_admin.models import StoreOwnerUser
+from storefront.models import StoreCustomerUser
+
 
 def customer_login_view(request):
     if request.method == 'POST':
@@ -14,7 +17,7 @@ def customer_login_view(request):
         password = request.POST['password']
 
         user = authenticate(request, username=email, password=password)
-        if user and isinstance(user, StoreUser):
+        if user and isinstance(user, StoreCustomerUser):
             login(request, user)
             return redirect('storefront:home')  # customize for your store
         messages.error(request, 'Invalid login credentials')
